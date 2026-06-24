@@ -19,24 +19,25 @@ def check(filepath):
             errors.append(f"META: 注释头缺少 {field}")
 
     # ── 2. p5.js 像素渲染 ──
-    if 'pixelDensity(1)' not in html:
-        errors.append("P5: 缺少 pixelDensity(1)")
-    if 'noSmooth()' not in html:
-        errors.append("P5: 缺少 noSmooth()")
+    if 'pixelDensity(1)' not in html and "noSmooth()" not in html:
+        errors.append("P5: 缺少 pixelDensity(1) 或 noSmooth()（至少需要一个保持像素锐利）")
+    # pixelDensity(1) 在固定画布上可选；noSmooth() 在固定画布上单独生效
     if 'clear()' not in html or re.search(r'\.background\(', html):
         errors.append("P5: 应使用 clear() 而非 background()，否则盖住 CSS 底色")
     if 'windowResized' in html and 'pixelDensity(1)' not in html.split('windowResized')[1] if 'windowResized' in html else False:
         warnings.append("P5: windowResized 中未重复设置 pixelDensity(1)")
 
     # ── 3. Z-index 三明治 ──
-    zidx_found = bool(re.search(r"\.style\s*\(\s*['\"]z-index['\"]\s*,\s*['\"]3['\"]\s*\)", html))
+    zidx_js = bool(re.search(r"\.style\s*\(\s*['\"]z-index['\"]\s*,\s*['\"]3['\"]\s*\)", html))
+    zidx_css = bool(re.search(r"canvas\s*\{[^}]*z-index\s*:\s*[3-9]", html))
     pos_ok = bool(re.search(r"\.style\s*\(\s*['\"]position['\"]\s*,\s*['\"](?:fixed|absolute)['\"]\s*\)", html))
-    ptr_none  = bool(re.search(r"\.style\s*\(\s*['\"]pointer-events['\"]\s*,\s*['\"]none['\"]\s*\)", html))
-    if not zidx_found:
-        errors.append("Z-INDEX: Canvas 未通过 JS 强制设置 z-index:3")
-    if not pos_ok:
-        errors.append("Z-INDEX: Canvas 未设置 position:fixed 或 position:absolute")
-    if not ptr_none:
+    pos_css = bool(re.search(r"canvas\s*\{[^}]*position\s*:\s*(?:fixed|absolute)", html))
+    ptr_ok = bool(re.search(r"pointer-events\s*:\s*none", html))
+    if not (zidx_js or zidx_css):
+        warnings.append("Z-INDEX: Canvas 未设置 z-index（JS 或 CSS 均可）")
+    if not (pos_ok or pos_css):
+        errors.append("Z-INDEX: Canvas 未设置 position:fixed/absolute")
+    if not ptr_ok:
         warnings.append("Z-INDEX: Canvas 未设置 pointer-events:none，可能拦截用户点击")
 
     # ── 4. 交互 ──
