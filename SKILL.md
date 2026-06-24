@@ -71,9 +71,19 @@ description: >
 - 触发反馈：CSS ripple / 粒子 / 颜色变化 / 缩放（至少一种）
 - 移动端：`user-scalable=no`, `touch-action: none`
 
-### 5. 验证清单
+### 5. 自动验证
 
-交付前逐条确认：
+生成 HTML 后，立即运行静态分析脚本排查低级 bug：
+
+```bash
+python3 /Users/zhangwensha/skills/skills/pixel-aero/scripts/validate.py <输出文件.html>
+```
+
+**脚本不通过 → 不交付。** 必须修复所有 ❌ 致命错误，⚠️ 警告需逐一排查。
+
+### 6. 人工验证清单
+
+自动验证通过后，逐条确认：
 
 1. 生命体有 ≥3 个状态的 FSM，或 React-only 模式有 ≥2 种不同反馈
 2. 生命体有表情/情绪变化系统（像素颜文字/颜色变化/形状变化至少一种），随状态切换
