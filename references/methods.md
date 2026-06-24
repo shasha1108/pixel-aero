@@ -141,3 +141,46 @@ let lt=0,to;layer.addEventListener('pointerdown',e=>{
 - masterGain 起始值 0，linearRampToValueAtTime 淡入防爆音
 - 174Hz 三角波 drone 作为治愈底噪（可选）
 - 交互反馈音效：sine wave pop/chime
+
+---
+
+## 八、三大系统性反模式（来自 time-tree 的 7 轮返工教训）
+
+### 反模式 1：p5.js Y 轴方向陷阱
+
+p5.js 的 Y 轴指向**下方**（与数学坐标系相反）。所有角度计算必须用 `+sin(ang)` 而非 `-sin(ang)`。
+
+```javascript
+// ✅ p5.js 正确
+ey = by + sin(angle) * length;
+
+// ❌ 数学坐标系（p5 中会反向）
+ey = by - sin(angle) * length;
+```
+
+**预防：** 写完任何涉及角度的绘制代码后，脑中默念 "p5 Y-down, +sin = down, -sin = up"。
+
+### 反模式 2：CSS 与 p5.js canvas 属性冲突
+
+p5.js 在 `createCanvas()` 时自己设置 `style` 属性。CSS 用 `!important` 或 `inset` 覆盖时与 p5 内部逻辑冲突，导致 canvas 完全消失。
+
+**正解：** 用 `c.parent('containerId')` 把 canvas 挂到指定 DOM 元素下，样式全部用 JS 设置（`c.style(...)`），**不用 CSS 选择器覆盖 canvas 属性**。需要 `border-radius` 或 `overflow:hidden` 时也在 JS 中设。
+
+```javascript
+let c = createCanvas(CW, CH);
+c.parent('myContainer');
+c.style('position', 'absolute');
+c.style('top', '20px');
+c.style('left', '20px');
+c.style('z-index', '2');
+```
+
+### 反模式 3：校验通过 ≠ 页面正常
+
+三步质检链必须**强制执行**——缺了 JS 语法检查和浏览器实测的 validate.py 是假绿灯。
+
+- **validate.py**（静态模式匹配）→ 查结构缺失，查不了语法错误和渲染 bug
+- **`node --check`**（JS 语法）→ 阻止白屏，每次必跑
+- **浏览器实测** → 点一下看有没有反应，树是不是正的，猫是不是在树后面
+
+**铁律：三步全绿才交付。跳任一步 = 白屏/倒树/无响应。**

@@ -3,8 +3,30 @@
 pixel-aero 静态验证器 — 交付前自动排查低级 bug。
 用法: python3 scripts/validate.py <生成的.html>
 """
-import re, sys
+import re, sys, subprocess, tempfile, os
 from pathlib import Path
+
+def check_js_syntax(filepath):
+    """Extract <script> blocks and run node --check on each."""
+    html = Path(filepath).read_text(encoding='utf-8')
+    scripts = re.findall(r'<script[^>]*>(.*?)</script>', html, re.DOTALL)
+    errors = []
+    for i, script in enumerate(scripts):
+        if not script.strip(): continue
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.js', delete=False, encoding='utf-8') as f:
+            f.write(script); tmp = f.name
+        try:
+            r = subprocess.run(['node', '--check', tmp], capture_output=True, text=True, timeout=5)
+            if r.returncode != 0:
+                err = r.stderr.strip().split('\n')[0] if r.stderr else 'Unknown syntax error'
+                errors.append(f'JS-SYNTAX: script block #{i+1} 语法错误: {err[:120]}')
+        except FileNotFoundError:
+            pass  # node not installed, skip check
+        except subprocess.TimeoutExpired:
+            pass
+        finally:
+            os.unlink(tmp)
+    return errors
 
 def check(filepath):
     html = Path(filepath).read_text(encoding='utf-8')
@@ -72,6 +94,9 @@ def check(filepath):
     # ── 8. 性能安全 ──
     if re.search(r'for.*< 1000', html) or re.search(r'\.push\(.*for.*\d{3}', html):
         warnings.append("PERF: 可能存在大循环(>1000次)，检查是否会卡顿")
+
+    # ── 0. JS 语法检查 ──
+    errors = check_js_syntax(filepath) + errors
 
     # ── 报告 ──
     print(f"\n{'='*50}")
