@@ -25,6 +25,17 @@
 
 ```html
 <!DOCTYPE html>
+<!--
+  Title: <场景名称，如"像素水族箱">
+  Summary: <主角 + 核心交互，一句话，如"三条像素鱼 + 点击喂食 + 双击敲玻璃">
+  Tech: p5.js, Canvas, CSS Glassmorphism, Web Audio API
+  Keywords: <pixel, 场景词，如 aquarium, frutiger-aero, cyber-pet>
+  Render: <fullViewport | fixedCanvas>
+  Audio: <yes | no>
+  Touch: <singleTap=行为, doubleTap=行为，无交互则写 none>
+  Dependencies: p5.js 1.9.0
+  Repo: healing-visual-lab
+-->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">

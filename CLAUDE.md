@@ -11,8 +11,10 @@ A Claude Code skill (`pixel-aero`) for generating pixel art + Frutiger Aero glas
 3. Output combines pixel sprites (crisp `rect()`) with procedural flora generation, AI FSM-driven creature behavior, and touch interaction rituals
 
 ## KEY FILES
-- `SKILL.md` — Core workflow (6 steps: scene→model selection→frontend→AI→interactions→QA)
-- `references/pixel-aero.md` — Complete technique guide (4 procedural generation models, FSM state machine, Z-index sandwich architecture, pointerdown debounce template, 15-item quality checklist)
+- `SKILL.md` — Core workflow: role / reference loading / boundary rules / architecture constraints / 6 generation steps
+- `references/design-principles.md` — Decision principles: motion laws, materials, anti-patterns, Ganzfeld mode (12 sections)
+- `references/code-templates.md` — Code library: defensive skeleton, procedural models A-D, FSM, interaction templates, color palettes, 15-item quality checklist
+- `references/audio-engine.md` — Web Audio synthesis recipes (zero audio files)
 
 ## TECH STACK
 p5.js, Canvas 2D, CSS Glassmorphism, procedural generation, Frutiger Aero aesthetics
