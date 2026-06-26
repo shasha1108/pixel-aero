@@ -1,25 +1,6 @@
 # CLAUDE.md · pixel-bloom
 
-This file is auto-loaded by Claude Code when this skill repository is opened.
-
-## WHAT THIS IS
-A Claude Code skill (`pixel-bloom`) for generating pixel art + Frutiger Aero luminous interactive H5 pages. Covers cyber pets, cyber plants, digital aquariums, open sky gardens, underwater scenes — wherever pixel life grows and glows.
-
-## HOW THIS SKILL WORKS
-1. User describes a scene (aquarium, terrarium, desktop widget, weather bottle, etc.)
-2. Skill generates a complete standalone HTML page using p5.js pixel rendering + CSS Frutiger Aero glassmorphism
-3. Output combines pixel sprites (crisp `rect()`) with procedural flora generation, AI FSM-driven creature behavior, and touch interaction rituals
-
-## KEY FILES
-- `SKILL.md` — Core workflow: role / reference loading / boundary rules / architecture constraints / 6 generation steps
-- `references/design-principles.md` — Decision principles: motion laws, materials, anti-patterns, Ganzfeld mode (12 sections)
-- `references/code-templates.md` — Code library: defensive skeleton, procedural models A-D, FSM, interaction templates, color palettes, 15-item quality checklist
-- `references/audio-engine.md` — Web Audio synthesis recipes (zero audio files)
-
-## TECH STACK
-p5.js, Canvas 2D, CSS Glassmorphism, procedural generation, Frutiger Aero aesthetics
-
----
+Auto-loaded by Claude Code when this skill repository is opened.
 
 ## GIT WORKFLOW（防冲突规范）
 

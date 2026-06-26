@@ -22,6 +22,15 @@ Three scene modes: closed container (glass terrarium), open viewport (sky/underw
 /pixel-bloom 帮我做一个像素多肉盆栽，阳光透过玻璃洒下来
 ```
 
+## Project structure
+
+| File | Purpose |
+|------|---------|
+| `SKILL.md` | Core workflow — role, boundary rules, architecture constraints, 6 generation steps |
+| `references/design-principles.md` | Decision principles — motion laws, materials, anti-patterns, Ganzfeld mode |
+| `references/code-templates.md` | Code library — defensive skeleton, procedural models A-D, FSM, interaction templates, color palettes, 15-item quality checklist |
+| `references/audio-engine.md` | Web Audio synthesis recipes — zero audio files |
+
 ## Related
 
 - [healing-space](https://github.com/shasha1108/healing-space) — General healing H5 skill (Three.js + p5.js + Web Audio)
