@@ -21,10 +21,11 @@ description: >
 | 时机 | 文件 | 内容 | 加载方式 |
 |------|------|------|---------|
 | 启动时必读 | `references/design-principles.md` | 架构决策 / 仿生运动三法则 / 材质 / 音效 / 排版 / 三大反模式 / Ganzfeld 模式（共 12 节） | **必读全部** |
-| STEP 4 生成前必读 | `references/code-templates.md` | 防御性骨架 / 四大程序化模型 A-D / FSM 代码 / 交互模板 / 调色板预设 / 15 项质量清单 | **必读全部（含 15 项清单）** |
-| 确认含音效后按需读 | `references/audio-engine.md` | Web Audio 合成配方（零音频文件，含验证版引擎封装）| **翻阅** — 查配方，不需要读完 |
-| 需要可复现/可探索时按需读 | `references/seeded-exploration.md` | Seeded randomness / Seed 导航面板 / 参数 slider 面板 / 可分享 URL | **翻阅** — 查模式+参数框架，不需要读完 |
-| STEP 2 选色时查阅 | `assets/palettes.json` | 6 套 Frutiger Aero 命名色板 + 基底渐变 + 使用规则 | **翻阅** — 选色板+查色值即可 |
+| STEP 1-3 执行时必读 | `references/generation-workflow.md` | STEP 0-3 执行细节：画幅选项 / 场景模式表 / 拆解示例 / 技术决策表 | **必读全部** |
+| STEP 4 生成前必读 | `references/code-templates.md` | 防御性骨架 / 四大程序化模型 A-D / FSM 代码 / 交互模板 / 调色板预设 / 15 项质量清单 | **必读：§防御性骨架 + 场景匹配的程序化模型 + §质检清单。其余翻阅** |
+| 确认含音效后按需读 | `references/audio-engine.md` | Web Audio 合成配方（零音频文件，含验证版引擎封装）| **翻阅** — 查配方 |
+| 需要可复现/可探索时按需读 | `references/seeded-exploration.md` | Seeded randomness / Seed 导航面板 / 参数 slider 面板 / 可分享 URL | **翻阅** — 查模式 |
+| STEP 2 选色时查阅 | `assets/palettes.json` | 6 套 Frutiger Aero 命名色板 + 基底渐变 + 使用规则 | **翻阅** — 选色板 |
 
 ## 不变项 vs 可变项
 
@@ -99,54 +100,19 @@ description: >
 
 ### STEP 0 — 视觉调研（新场景必做）
 
-```bash
-opencli browser research open "https://www.pinterest.com/search/pins/?q=<英文搜索词>"
-opencli browser research state
-```
-
-观察形状特征、色彩、光影层次，直接转化为 STEP 2 的拆解决策。
-
-> 若浏览器工具不可用，从用户描述推断形态特征，直接进 STEP 1。
+> 执行细节 → `references/generation-workflow.md §STEP0`
 
 ### STEP 1 — 画幅、音效与场景模式
 
-1. 让用户选画幅（3:4 / 9:16 / 1:1 / 4:3 / 16:9），用 CSS `aspect-ratio` 锁定
-2. 询问是否包含音效（yes / no），含音效时后续需读 `references/audio-engine.md`
-3. 确定场景模式（决定后续所有技术决策）：
-
-| 场景模式 | 画布 | 特征 |
-|---------|------|------|
-| 封闭容器（穹顶/球体/玻璃瓶） | 固定 320×480 | Z-index 三明治 + `transform:scale` 适配屏幕 |
-| 开放场景（全视口天空/水下） | 全视口 | 无玻璃壳，CSS 极光光斑漂浮 |
-| Ganzfeld（已触发） | 全视口 | 高明度 Aero 光场 + Skyspace 透镜容器 |
+> 画幅选项 + 场景模式表 → `references/generation-workflow.md §STEP1`
 
 ### STEP 2 — 像素拆解
 
-将用户描述逐层分解为像素基础元素 + 程序化模型：
-
-```
-用户描述
-  → 场景模式
-  → 主物体：有自主运动（鱼/宠物/史莱姆）→ FSM 三态（Wander/Chase/Flee）+ Perlin noise 驱动
-             无自主运动（植物/摆件/珊瑚）→ React-only（交互触发单次反馈动画）
-  → 副物体：至少选 2 种 A-D 程序化模型（如 A水草 + C珊瑚礁）
-  → 背景：全视口 Aero 渐变 + 极光光斑
-```
-
-- 气泡必须用 `drawAeroBubble()`（偏移高光正圆），禁用 `rect()` 圆角替代
-- 调色板从 `code-templates.md` 预设数组（WARM / COOL / NEON）取，禁止对单个物体随机 RGB
+> 拆解示例 + 规则 → `references/generation-workflow.md §STEP2`
 
 ### STEP 3 — 技术决策（5 项，逐一明确后才写代码）
 
-| 决策项 | 选项 |
-|--------|------|
-| 画布类型 | 固定 320×480 / 全视口 |
-| 运动模式 | FSM Wander/Chase/Flee / React-only |
-| 玻璃类型 | 穹顶 / 球体 / Skyspace 透镜（Ganzfeld）/ 无 |
-| 粒子 | Perlin 漩涡 / 下落 / 拖影残像（Ganzfeld：`fill(10,8,20,12)` 替代 `clear()`）/ 无 |
-| 音效 | 交互 chime（默认）/ 174Hz 三角波底噪 / 432+216Hz 颂钵（Ganzfeld）|
-
-> 含音效时：读 `references/audio-engine.md`。AudioContext 在首次用户交互后 `resume()`，masterGain 起始值 0 淡入防爆音。
+> 决策表 → `references/generation-workflow.md §STEP3`
 
 ### STEP 4 — 生成
 
