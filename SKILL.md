@@ -1,18 +1,11 @@
 ---
 name: pixel-bloom
 description: >
-  Use whenever the user wants to create any kind of pixel-art interactive H5 page — cyber pets,
-  cyber plants, digital aquariums, pixel terrariums, pixel gardens, pixel forests, underwater scenes,
-  or any scenario where pixel lifeforms grow and glow in a luminous Frutiger Aero world.
-  Trigger on: "像素盆栽", "赛博宠物", "像素养鱼", "像素花园", "像素生态", "像素森林",
-  "pixel garden", "pixel bloom", "digital garden", "pixel life", "pixel creature",
-  "Frutiger Aero pixel", "像素 + 毛玻璃", "像素 + 治愈", "电子宠物", "电子盆栽",
-  "电子鱼缸", "像素小鱼", "像素小花", "像素小草", "做一个宠物", "做一个花园",
-  "养一个电子", "种一个像素" — any request involving pixel art with glassmorphism,
-  Frutiger Aero visual style, or interactive pixel lifeforms, even if the user
-  doesn't explicitly say "pixel".
-  Do NOT trigger for: Three.js 3D scenes (use healing-space), pure CSS animations
-  without canvas, static pixel art without interactivity, or non-pixel vector illustrations.
+  Build pixel-art interactive H5 pages with Frutiger Aero glassmorphism — cyber pets, pixel gardens,
+  digital aquariums, pixel forests, or any pixel lifeform scene. Trigger on any request involving
+  pixel art + interactivity + glassmorphism, even if the user doesn't say "pixel" (像素盆栽,
+  赛博宠物, pixel bloom, etc.). Do NOT trigger for: Three.js 3D scenes (→ healing-space),
+  static pixel art without interactivity, non-pixel vector illustrations.
 ---
 
 # Pixel Bloom — 像素生命的绽放
