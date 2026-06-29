@@ -2,16 +2,6 @@
 
 <div align="center">
 
-```
-  ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜
-  ⬜⬜⬜🟦🟦🟦⬜⬜⬜🟩🟩⬜⬜🟪🟪🟪⬜⬜⬜🟦🟦🟦⬜
-  ⬜⬜🟦✨🟦⬜⬜🟩🌱🟩⬜🟪✨🟪⬜⬜🟦✨🟦⬜⬜
-  ⬜🟦🟦🟦🟦🟦⬜🟩🟩🟩🟩🟩🟪🟪🟪🟪🟪🟦🟦🟦🟦🟦⬜
-  ⬜⬜🟦🟦🟦⬜⬜🟩🟩🟩⬜⬜🟪🟪🟪⬜⬜⬜🟦🟦🟦⬜⬜
-  ⬜⬜⬜🟦⬜⬜⬜⬜🟩⬜⬜⬜⬜🟪⬜⬜⬜⬜⬜🟦⬜⬜⬜⬜
-  ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜
-```
-
 <h1>Pixel Bloom · 像素生命的绽放</h1>
 
 <p><em>A Claude Code skill for building pixel-art interactive H5 pages with Frutiger Aero glassmorphism.</em></p>
@@ -382,13 +372,6 @@ MIT © 2026 [@shasha1108](https://github.com/shasha1108) — see [LICENSE](LICEN
 <br>
 
 <div align="center">
-
-```
-  ⬜⬜⬜🟦🟦🟦⬜⬜⬜🟩🟩⬜⬜🟪🟪🟪⬜⬜⬜🟦🟦🟦⬜⬜⬜
-  ⬜⬜🟦✨🟦⬜⬜🟩🌱🟩⬜🟪✨🟪⬜⬜🟦✨🟦⬜⬜⬜
-  ⬜🟦🟦🟦🟦🟦⬜🟩🟩🟩🟩🟩🟪🟪🟪🟪🟪🟦🟦🟦🟦🟦⬜⬜
-  ⬜⬜🟦🟦🟦⬜⬜🟩🟩🟩⬜⬜🟪🟪🟪⬜⬜⬜🟦🟦🟦⬜⬜⬜
-```
 
 <sub>Made with pixels, glass, and light. 用像素、玻璃与光，创造出生命绽放的世界。</sub>
 
