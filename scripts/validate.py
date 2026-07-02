@@ -135,9 +135,9 @@ def check(filepath):
     # ── 3.5 像素网格纯度检查（Pixel Grid Integrity）──
     # 铁律 6：像素完整性
 
-    # PX-GRID-1: noSmooth() 存在性
+    # PX-GRID-1: noSmooth() 存在性（降级为警告——Frutiger Aero 光滑场景不需要）──
     if 'noSmooth()' not in html:
-        errors.append("PX-GRID-NOSMOOTH: setup() 中缺少 noSmooth()——像素渲染必须禁用平滑（铁律 6）")
+        warnings.append("PX-GRID-NOSMOOTH: setup() 中缺少 noSmooth()——纯像素场景建议开启。Frutiger Aero 光滑拟物场景（水下/iPod/玻璃）可忽略此警告")
 
     # PX-GRID-2: imageSmoothingEnabled = false
     if 'imageSmoothingEnabled' not in html:

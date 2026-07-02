@@ -866,6 +866,14 @@ document.getElementById('interact-layer').addEventListener('pointerdown', (e) =>
 
 ## 像素字体强制规则（生成任何含文字像素场景前必读）
 
+> ⚠️ **触发条件**：仅当场景为**纯像素艺术风格**（`noSmooth()` + `pixelDensity(1)` 已开启）时强制执行。**Frutiger Aero 光滑渲染场景**（水下 MP3、玻璃容器、Ganzfeld 光场等）不应开启 `noSmooth()`，应使用系统字体正常渲染——矢量文字 + Frutiger Aero 光滑表面 = 正确搭配。
+
+| 场景类型 | noSmooth() | 文字渲染 | 原因 |
+|---------|-----------|---------|------|
+| 纯像素艺术（像素森林、像素宠物、像素花园） | ✅ 开启 | 像素字体 / 3×5 位图 | 像素网格一致性 |
+| Frutiger Aero 光滑拟物（水下MP3、玻璃容器、Ganzfeld） | ❌ 关闭 | 系统矢量字体 | 光滑表面需矢量文字匹配 |
+| 混合场景（像素主体 + Aero 环境） | 按主体决定 | 主体像素=像素字体，UI=矢量 | 按视觉主导方向 |
+
 > **铁律**：`noSmooth()` + `pixelDensity(1)` 的像素场景中，禁止使用矢量字体（`ctx.font` / `textFont()` 指定系统字体如 Segoe UI / PingFang SC）。矢量字体与像素网格产生不可调和的 Mixel 冲突。
 
 | 场景类型 | 文字渲染方式 |
@@ -1058,6 +1066,91 @@ function drawFlowingCord(ctx, startX, startY, endX, endY, t, swayAmp, segments) 
 ```
 
 **对比**：`lineTo` 8 段 = 硬折断线。`bezierCurveTo` 4 段 + Perlin 控制点 = 水草般柔顺。
+
+---
+
+## 交互物理层模板（主体必须有质量感——点按反馈不是"弹出个东西"）
+
+> 主体被点击时，不应只是触发粒子——主体本身必须产生物理反应（下沉、摇晃、缓慢恢复）。这让用户感觉"我碰到了真实的物体"。
+
+```javascript
+// ═══════════════════════════════════════════════════════════
+// 主体物理状态
+// ═══════════════════════════════════════════════════════════
+let subject = {
+  x: CW/2, y: CH*0.44,        // 基础位置
+  w: 220, h: 360,              // 尺寸
+  vy: 0,                        // 垂直动量
+  angle: 0,                     // 倾斜角度
+  pushImpulse: 0,              // 点按冲量 (-16 = 强推, 0 = 静止)
+};
+
+function updateSubjectPhysics(t) {
+  // 冲量衰减（lerp 回 0——缓慢恢复）──
+  subject.pushImpulse = lerp(subject.pushImpulse, 0, 0.05);
+
+  // Y 轴浮动 = 基础正弦 + 点按冲量
+  subject.y = CH * 0.44 + sin(t * 1.8) * 10 + subject.pushImpulse * 12;
+
+  // 倾斜角度 = 微幅正弦 + 点按冲量
+  subject.angle = sin(t * 1.2) * 0.035 + subject.pushImpulse * 0.04;
+}
+
+// 点击时：
+// subject.pushImpulse = -16;  ← 主体下沉 + 摇晃
+```
+
+**效果**：主体有惯性、有质量、被触碰后会动。不是"贴纸"。
+
+---
+
+## 抛光层模板（让 Frutiger Aero 主体从 85 分到 95 分）──
+
+> 以下 4 个"抛光层"是 Frutiger Aero 拟物的收尾工序——不是可选的。
+
+```javascript
+// 1. 镀铬金属包边（1-2px 极亮白线环绕主体轮廓）──
+ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+ctx.lineWidth = 2;
+// 在主体轮廓路径上 stroke() —— 瞬间产生"抛光金属边框"感
+
+// 2. 表面水波/环境反射覆层（clip 在主体内 + overlay/screen 混合）──
+ctx.save();
+roundRectPath(ctx, -w/2, -h/2, w, h, r);  // 主体轮廓
+ctx.clip();
+ctx.globalCompositeOperation = 'overlay';
+ctx.fillStyle = 'rgba(180, 240, 255, 0.22)';
+for (let i = 0; i < 4; i++) {
+  let wy = -h/2 + i * 90 + sin(t * 2 + i) * 20;
+  // bezier 波纹条带
+  ctx.beginPath();
+  ctx.moveTo(-w, wy);
+  ctx.bezierCurveTo(-w/2, wy - 30, w/2, wy + 30, w, wy);
+  ctx.lineTo(w, wy + 15);
+  ctx.bezierCurveTo(w/2, wy + 45, -w/2, wy - 15, -w, wy + 15);
+  ctx.closePath(); ctx.fill();
+}
+ctx.restore();
+
+// 3. 前景 CSS blur 虚化光斑（景深三层——前景，镜头前漂过）──
+ctx.save();
+ctx.filter = 'blur(8px)';
+for (let i = 0; i < 3; i++) {
+  let bx = CW * 0.15 + i * 210 + sin(t + i) * 40;
+  let by = (CH + 100 - (t * 45 + i * 280) % (CH + 200));
+  ctx.fillStyle = 'rgba(200, 245, 255, 0.16)';
+  ctx.beginPath();
+  ctx.arc(bx, by, 38 + i * 12, 0, Math.PI * 2);
+  ctx.fill();
+}
+ctx.filter = 'none';
+ctx.restore();
+
+// 4. Y 型分线器结构（耳线/数据线——主线 → 分线器圆柱 → 左右分支）──
+// 见 §柔顺曲线模板。补充：分线器是一个小圆角矩形，分支线从分线器两侧出发。
+```
+
+**抛光四件套**：镀铬边 ✓ / 表面覆层 ✓ / 前景虚化 ✓ / 分线器结构 ✓。缺一即"差一口气"。
 
 ---
 
