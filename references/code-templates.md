@@ -864,6 +864,203 @@ document.getElementById('interact-layer').addEventListener('pointerdown', (e) =>
 
 ---
 
+## 像素字体强制规则（生成任何含文字像素场景前必读）
+
+> **铁律**：`noSmooth()` + `pixelDensity(1)` 的像素场景中，禁止使用矢量字体（`ctx.font` / `textFont()` 指定系统字体如 Segoe UI / PingFang SC）。矢量字体与像素网格产生不可调和的 Mixel 冲突。
+
+| 场景类型 | 文字渲染方式 |
+|---------|------------|
+| 像素主体 + 屏幕 UI（如 MP3/iPod 屏幕） | **Canvas 像素文字**：逐像素 `fillRect()` 绘制字形，或使用像素字体（见下） |
+| 纯像素艺术场景 | 像素字体：加载 Ark Pixel / ZPix 等 `.woff2` 像素字体，仅在整数倍尺寸下渲染 |
+| 非像素场景（全矢量/CSS） | 系统字体正常使用 |
+
+**快速像素数字/字母（无需加载字体）**：用 3×5 像素网格手工绘制数字和字母：
+```javascript
+// 3×5 像素数字位图（0-9）
+const DIGITS = {
+  '0': ['111','101','101','101','111'],
+  '1': ['010','110','010','010','111'],
+  '2': ['111','001','111','100','111'],
+  // ... 按需扩展
+};
+function drawPixelChar(ctx, ch, x, y, scale) {
+  const rows = DIGITS[ch] || DIGITS['0'];
+  for (let r = 0; r < rows.length; r++) {
+    for (let c = 0; c < rows[r].length; c++) {
+      if (rows[r][c] === '1') {
+        ctx.fillRect(x + c * scale, y + r * scale, scale, scale);
+      }
+    }
+  }
+}
+```
+
+**禁止**：在 `noSmooth()` 画布上用 `ctx.font = '14px Segoe UI'` 渲染文字 → 高清矢量字体 + 粗糙像素网格 = 致命 Mixel 违和感。
+
+---
+
+## 2.5D 体块模板（主体必须有厚度——纵深法则 4）
+
+> 纯平面矩形 = 纸片。有侧面和顶面的体块 = 物体。任何拟物主体必须露出至少一个侧面。
+
+```javascript
+/**
+ * 2.5D 体块 — 正面 + 右侧面 + 顶面（轴测/单点透视）
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} x, y — 正面左上角
+ * @param {number} w, h — 正面宽高
+ * @param {number} depth — 侧面深度 (px)，默认 12
+ * @param {Object} colors — { front, side, top, bottom }
+ *
+ * 光源：左上 45° → 正面最亮、右侧面暗 40%、顶面最亮、底面最暗
+ */
+function draw2_5DBox(ctx, x, y, w, h, depth, colors) {
+  const d = depth || 12;
+  const { front, side, top, bottom } = colors;
+
+  // 右侧面（暗 40%）──
+  ctx.fillStyle = side;
+  ctx.beginPath();
+  ctx.moveTo(x + w, y);
+  ctx.lineTo(x + w + d, y - d * 0.5);
+  ctx.lineTo(x + w + d, y + h - d * 0.5);
+  ctx.lineTo(x + w, y + h);
+  ctx.closePath();
+  ctx.fill();
+
+  // 顶面（亮）──
+  ctx.fillStyle = top;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + d, y - d * 0.5);
+  ctx.lineTo(x + w + d, y - d * 0.5);
+  ctx.lineTo(x + w, y);
+  ctx.closePath();
+  ctx.fill();
+
+  // 正面（正常亮度）──
+  ctx.fillStyle = front;
+  ctx.fillRect(x, y, w, h);
+
+  // 底面阴影（最暗）──
+  ctx.fillStyle = bottom;
+  ctx.fillRect(x, y + h, w, d * 0.3);
+}
+
+// 使用示例 — 白色抛光 MP3 体块:
+// draw2_5DBox(ctx, 200, 300, 220, 365, 14, {
+//   front: '#f4f6f8',    // 正面 — 正常抛光白
+//   side:  '#c0c8d0',    // 侧面 — 暗 25%
+//   top:   '#ffffff',    // 顶面 — 极亮
+//   bottom:'#a0a8b0',   // 底面 — 暗 35%
+// });
+```
+
+**阴阳面暗度差参考**（左上光源）：
+- 正面 = 基准色
+- 顶面 = 基准色 × 1.1（亮 10%）
+- 右侧面 = 基准色 × 0.6（暗 40%）
+- 底面 = 基准色 × 0.5（暗 50%）
+
+---
+
+## 水下沉浸模板（Caustics + Floating + Shadow）
+
+> 水下主体必须满足三个条件，否则 = 蓝纸上贴方块。
+
+```javascript
+// ═══════════════════════════════════════════════════════════
+// 水下沉浸三要素
+// ═══════════════════════════════════════════════════════════
+
+// 1. 主体悬浮动画（正弦缓动，不是写死坐标）──
+let floatOffset = 0;
+function updateFloat(t) {
+  floatOffset = sin(t * 0.8) * 6 + cos(t * 0.55) * 4;  // 上下 ±10px
+}
+
+// 2. 主体下方水底阴影（空间锚点——纵深法则 1）──
+function drawUnderwaterShadow(ctx, cx, cy, w, h, alpha) {
+  // 阴影在主体下方远处的水底/地面上
+  let shadowY = cy + h * 0.6 + 20;
+  let shadowScale = map(floatOffset, -10, 10, 0.85, 1.15);  // 随浮动缩放
+  ctx.fillStyle = `rgba(4, 20, 40, ${alpha})`;
+  ctx.beginPath();
+  ctx.ellipse(cx, shadowY, w * 0.4 * shadowScale, h * 0.06 * shadowScale, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// 3. 主体表面焦散光斑叠加（Bayer 抖动 + screen 混合）──
+function drawCausticsOnSubject(ctx, x, y, w, h, t) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for (let cy2 = y; cy2 < y + h; cy2 += PX * 3) {
+    for (let cx2 = x; cx2 < x + w; cx2 += PX * 3) {
+      let n = noise(cx2 * 0.02, cy2 * 0.02, t * 0.3);
+      let bv = BAYER_4X4[abs(floor(cy2 / PX)) % 4][abs(floor(cx2 / PX)) % 4];
+      if (bv > 11 && n > 0.5) {
+        ctx.fillStyle = 'rgba(180, 220, 255, 0.06)';
+        ctx.fillRect(cx2, cy2, PX * 3, PX * 3);
+      }
+    }
+  }
+  ctx.restore();
+}
+```
+
+**水下清单**：主体在浮动 ✓ / 水底有阴影 ✓ / 表面有焦散光斑 ✓ / 背景渐变从天顶浅→水底深 ✓ → 四者缺一即"沉水感"不成立。
+
+---
+
+## 柔顺曲线模板（Perlin 驱动 Bezier — 替代 lineTo 硬连线）
+
+> 用 5-8 段 `lineTo` 画线 = 骨折的铁丝。柔顺曲线 = 3 个控制点的 `bezierCurveTo` + Perlin 噪声驱动控制点漂移。
+
+```javascript
+/**
+ * 水下飘荡的耳线 / 水草 / 藤蔓
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {number} startX, startY — 起点
+ * @param {number} endX, endY — 终点
+ * @param {number} t — 全局时间
+ * @param {number} swayAmp — 飘荡幅度 (推荐 15-40)
+ * @param {number} segments — 分段数 (推荐 3-4，不是 8+)
+ */
+function drawFlowingCord(ctx, startX, startY, endX, endY, t, swayAmp, segments) {
+  const segs = segments || 4;
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+
+  for (let i = 1; i <= segs; i++) {
+    const progress = i / segs;
+    // 控制点 — Perlin 噪声驱动，产生有机飘荡
+    const cp1x = startX + (endX - startX) * (progress - 0.3 / segs)
+                + sin(t * 0.7 + progress * 3.5) * swayAmp * progress;
+    const cp1y = startY + (endY - startY) * (progress - 0.3 / segs)
+                + cos(t * 0.5 + progress * 2.8) * swayAmp * 0.6 * progress;
+    const cp2x = startX + (endX - startX) * (progress - 0.15 / segs)
+                + sin(t * 0.6 + progress * 4.0 + 1) * swayAmp * 0.7 * progress;
+    const cp2y = startY + (endY - startY) * (progress - 0.15 / segs)
+                + cos(t * 0.55 + progress * 3.2 + 1) * swayAmp * 0.5 * progress;
+    const ex = startX + (endX - startX) * progress;
+    const ey = startY + (endY - startY) * progress;
+
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, ex, ey);
+  }
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// 使用示例 — 从耳机孔飘出的耳线:
+// drawFlowingCord(ctx, mp3CX, mp3Top, mp3CX - 40, mp3CY + 180, t, 25, 4);
+```
+
+**对比**：`lineTo` 8 段 = 硬折断线。`bezierCurveTo` 4 段 + Perlin 控制点 = 水草般柔顺。
+
+---
+
 ## 像素实体系统（Pixel Entity System）
 
 > 以下工具函数实现 `pixel-grid-system.md` 定义的像素完整性约束。生成任何含像素元素的场景时，优先从本节复制代码。
