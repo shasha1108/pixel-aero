@@ -162,7 +162,7 @@ function updateParam(key, value) {
 | 能力 | 来源 |
 |------|------|
 | 程序化模型 A-D、FSM 代码 | `code-templates.md` — STEP 4 前必读 |
-| 调色板 | `assets/palettes.json` — STEP 2 选色时查阅 |
+| 调色板 | `references/frutiger-aero-palettes.md` — STEP 1-4 参考 |
 | 架构决策、仿生运动、材质、反模式 | `design-principles.md` — 启动时必读 |
 | **Seeded randomness、Seed 导航、参数面板** | 本文件 — 需要可复现/可探索时读取 |
 

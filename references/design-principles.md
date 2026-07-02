@@ -71,14 +71,6 @@ Pass 3 — 前曲面高光 (Front Specular)
 
 **原则**：当场景要求 Frutiger Aero 风格时，代码必须满足以下物理特征。这不是"建议"——是 Frutiger Aero 的定义性特征。
 
-**三大致命避坑区（90% 的"丑/土/脏/发灰"来源于此）**：
-
-| 避坑区 | ❌ 错误（莫兰迪/灰冷工业色） | ✅ 正确（高饱和通透自然色） |
-|--------|--------------------------|---------------------------|
-| 暗沉蓝 | `#5c768d`、`#3a5160`、`#0a3058`（灰度蓝=脏） | `#00F0FF`（绝对水青）、`#0090E0`（清澈海蓝）、`#05254D`（深海靛蓝） |
-| 沉闷绿 | `#2d4a3e`（墨绿）、`#556b2f`（橄榄绿） | `#80E040`（嫩芽黄绿）、`#D0FF60`（阳光黄绿） |
-| 缺高光白 | 纯色平涂或单淡渐变 = 没有灵魂 | `rgba(255,255,255,0.85)` screen 抛光条带 + `rgba(255,255,255,1.0)` 1px 菲涅尔边缘 |
-
 **禁用清单（Anti-Aero — 出现任一即风格偏离）**：
 - ❌ 低饱和度/发灰的莫兰迪色（饱和度 < 30%）—— Aero 是科技乐观主义，不是灰冷工业风
 - ❌ 暗沉的毛玻璃（frosted blur — 灰白模糊，非通透）
@@ -96,76 +88,7 @@ Pass 3 — 前曲面高光 (Front Specular)
 | 上升气泡粒子 | 正圆 + 左上 Crescent 高光 + Perlin 上升轨迹 + 大小变化 | 水下生态的生命感 |
 | 大气光斑（Bokeh） | CSS 径向渐变巨大模糊光斑（`filter: blur(30px)`，`opacity: 0.25`）缓慢漂浮在背景 | 镜头光晕 / 空气感 |
 
-**Frutiger Aero 权威色号字典（4 大色系）**：
-
-**① 晶莹水体主色系（占画面 60-70%）**：
-
-| 颜色名称 | HEX | 特性 | 用途 |
-|---------|-----|------|------|
-| Electric Aqua（绝对水青） | `#00F0FF` | RGB(0,240,255) 高亮高饱和 | 浅水区、水面高光、粒子亮核 |
-| Sky Cyan（晴空青） | `#70E5FF` | RGB(112,229,255) | 天空底部、水下高光层 |
-| Ocean Blue（清澈海蓝） | `#0090E0` | RGB(0,144,224) | 渐变中段、瓶内水体主体 |
-| Abyssal Sapphire（深海靛蓝） | `#05254D` | RGB(5,37,77) 高对比度暗部 | 深海底部、暗部阴影、文字底色 |
-
-**② 生态嫩绿辅助色系（占画面 15-20%）**：
-
-| 颜色名称 | HEX | 特性 | 用途 |
-|---------|-----|------|------|
-| Sprout Lime（嫩芽绿） | `#80E040` | RGB(128,224,64) 标志性荧光绿 | 草地高光、按钮发光、生态叶片 |
-| Vibrant Eco（生态绿色） | `#40B010` | RGB(64,176,16) | 草地阴影、树木中段色 |
-| Sunlit Leaf（阳光黄绿） | `#D0FF60` | RGB(208,255,96) | 受到顶光照射的叶片尖端 |
-
-**③ 拟物抛光高光系（占画面 10%，必须配合 Alpha + screen 混合）**：
-
-| 颜色名称 | RGBA | 渲染模式 | 用途 |
-|---------|------|---------|------|
-| Pure Specular（刺眼强高光） | `rgba(255,255,255,1.0)` | source-over | 1px 菲涅尔边缘、高光亮点 |
-| Gloss Sheen（抛光渐变） | `rgba(255,255,255,0.85)` | screen 或 lighter | 曲面主高光条带顶部 |
-| Refractive Aura（冰蓝光晕） | `rgba(200,245,255,0.3)` | screen | 玻璃内部光晕、水下透光 |
-
-**④ 暖阳耀斑点缀系（占画面 5%）**：
-
-| 颜色名称 | HEX | 用途 |
-|---------|-----|------|
-| Solar Flare（太阳金黄） | `#FFD700` / `#FF9900` | 右上角太阳耀斑、商品灯光 |
-| Warm Magenta（霓虹粉/紫） | `#FF5577` | 紫阳花亮部、频谱高音条 |
-
-**标准渐变拼贴公式（禁止双色平淡渐变，必须 3-Stop 及以上）**：
-
-```javascript
-// 公式 A：标准水体/玻璃通透渐变
-let grad = ctx.createLinearGradient(x1, y1, x2, y2);
-grad.addColorStop(0,   '#00F0FF'); // 顶部：透亮水青
-grad.addColorStop(0.55,'#0090E0'); // 中段：清澈海蓝
-grad.addColorStop(1,   '#05254D'); // 底部：深海靛蓝
-
-// 公式 B：鲜活生态草地/植物渐变
-grad.addColorStop(0,   '#D0FF60'); // 顶部：阳光黄绿
-grad.addColorStop(0.4, '#80E040'); // 中段：嫩芽绿
-grad.addColorStop(1,   '#40B010'); // 底部：生态深绿
-
-// 公式 C：拟物亚克力抛光盖板（必须 screen 混合）
-let specGrad = ctx.createLinearGradient(x, yTop, x, yBottom);
-specGrad.addColorStop(0,   'rgba(255,255,255,0.95)'); // 刺眼白
-specGrad.addColorStop(0.35,'rgba(255,255,255,0.40)');
-specGrad.addColorStop(0.65,'rgba(200,245,255,0.10)');
-specGrad.addColorStop(1,   'rgba(255,255,255,0.0)');  // 完全消失
-// 必须配合: ctx.globalCompositeOperation = 'screen';
-```
-
-**色彩校验铁律**：
-
-1. **HSB/HSV 数值下限**：除最深暗部（`#05254D`）外，主色调明度(Brightness) **必须 > 75%**。水体与植物主色饱和度(Saturation) **必须在 60%~90%**，严禁饱和度 < 30%。
-2. **3:1:1 黄金面积比**：70% 绝对冷色（水青+晴空青+海蓝）+ 20% 鲜活绿/白（嫩芽绿+亚克力白）+ 10% 暖光点缀（太阳黄/耀斑粉）。
-3. **高光混合模式**：所有白色高光条带、水面反光、水下气泡必须叠加 `globalCompositeOperation = 'screen'` 或 `'lighter'`——禁止直接用不透明白块平涂。
-
-**参考调色板来源**（完整色值见 `assets/palettes.json → frutiger_aero_reference`）：
-
-| 来源 | 色板名 | 颜色数 | 最佳用途 |
-|------|--------|--------|---------|
-| Lospec | **aero16** (TokoSauce) | 16 色 | 全场景 Frutiger Aero — 冰白/水青/嫩绿/暖阳/薰衣草紫全覆盖 |
-| ColorMagic | **Frutiger Aero Core 5** | 5 色 | 完美水体渐变：`#9aeff2`→`#33bcde`→`#129aca` |
-| Aesthetics Wiki | **Nature + Glass** | 20+ 色 | 草地绿/天空蓝/玻璃白/暖阳点缀 四大色系 |
+> **🎨 完整色号字典、11 套精选调色板、标准渐变公式、色彩校验铁律 → `references/frutiger-aero-palettes.md`（场景含 Frutiger Aero 元素时必读全部——且禁止自创颜色）。**
 
 ---
 
@@ -466,7 +389,7 @@ html,body{touch-action:none;user-select:none;-webkit-user-select:none}
 ## 八、色彩
 
 - 预设调色板数组，不为每个物体独立 random RGB
-- Frutiger Aero 底色：柔和粉彩渐变，权威值见 `assets/palettes.json` 的 `base_gradient`
+- Frutiger Aero 底色：柔和粉彩渐变，权威值见 `references/frutiger-aero-palettes.md`
 - 场景内 2-3 套调色板统一色调
 
 ### 6.1 空间相干颜色变化（去 random，用 noise field）

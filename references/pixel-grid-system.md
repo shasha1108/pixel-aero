@@ -221,7 +221,7 @@ function orderedDither(x, y, t, colorA, colorB, matrix = BAYER_4X4) {
 | Wii 频道菜单 | 白底圆角 + 蓝绿红 | `#F8F8F8`, `#4AA0F0`, `#50D050`, `#F04040` |
 | Web 2.0 Glossy Badge | 亮底 + 光泽弧线 | `#F8F8F8`, `#0099FF`, `#66CC00`, `#FF9900` |
 
-> 完整控制台调色板数组见 `assets/palettes.json`。上述值为色系参考，精确值需从 Spriters Resource 采样。
+> 完整控制台调色板数组见 `references/frutiger-aero-palettes.md`。上述值为色系参考，精确值需从 Spriters Resource 采样。
 
 ---
 

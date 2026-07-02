@@ -802,11 +802,11 @@ document.getElementById('interact-layer').addEventListener('pointerdown', (e) =>
 
 ### Frutiger Aero 天空/水色
 
-> 天空和水面渐变色见 `assets/palettes.json` 的 `sky_gradient` 数组——用于 Canvas 内 `fill()` 逐像素填充，与 CSS 层的 `base_gradient` 配合使用。
+> 天空和水面渐变色见 `references/frutiger-aero-palettes.md` — 用于 Canvas 内 `fill()` 逐像素填充，与 CSS 层的 `base_gradient` 配合使用。
 
 ### 调色板
 
-> 调色板从 `assets/palettes.json` 选取——6 套命名色板（Aqua Glass / Botanical Dew / Sunlit Meadow / Coral Reef / Lavender Mist / Cyber Mint），按 scene 匹配。禁止对单个物体独立 random RGB。
+> 调色板从 `references/frutiger-aero-palettes.md` 选取——11 套精选色板，按 scene 匹配。禁止对单个物体独立 random RGB。
 
 ---
 

@@ -56,7 +56,7 @@
 - 主物体：有自主运动（鱼/宠物）→ FSM 三态 + Perlin noise；无自主运动（植物/摆件）→ React-only
 - 副物体：至少选 2 种 A-D 程序化模型（如 A水草 + C珊瑚礁）
 - 气泡必须用 `drawAeroBubble()`（偏移高光正圆），禁用 `rect()` 圆角替代
-- 调色板从 `assets/palettes.json` 选取（6 套命名色板），禁止对单个物体随机 RGB
+- 调色板从 `references/frutiger-aero-palettes.md` 选取，禁止对单个物体随机 RGB
 
 ---
 
